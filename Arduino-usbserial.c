@@ -245,10 +245,13 @@ ISR(USART1_RX_vect, ISR_BLOCK)
 void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t *const CDCInterfaceInfo)
 {
 	bool CurrentDTRState = (CDCInterfaceInfo->State.ControlLineStates.HostToDevice & CDC_CONTROL_LINE_OUT_DTR);
-	if (!CurrentDTRState)
+	if (CurrentDTRState)
 	{
 		AVR_RESET_LINE_PORT &= ~AVR_RESET_LINE_MASK;
-
+	}
+	else
+	{
+		AVR_RESET_LINE_PORT |= AVR_RESET_LINE_MASK;
 		if (CDCInterfaceInfo->State.LineEncoding.BaudRateBPS == 1200)
 		{
 			jmpToBootloader = JUMP;
@@ -258,9 +261,5 @@ void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t *const C
 			{
 			}
 		}
-	}
-	else
-	{
-		AVR_RESET_LINE_PORT |= AVR_RESET_LINE_MASK;
 	}
 }
