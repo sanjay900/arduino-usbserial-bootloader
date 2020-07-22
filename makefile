@@ -764,6 +764,7 @@ clean_doxygen:
 
 # Create object files directory
 $(shell mkdir $(OBJDIR) 2>/dev/null)
+$(shell mkdir out 2>/dev/null)
 
 
 # Include the dependency files.
