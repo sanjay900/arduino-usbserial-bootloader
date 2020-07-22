@@ -81,6 +81,8 @@ ARDUINO_MODEL_PID ?= 0x0001
 # "Board" inside the application directory.
 BOARD  = USER
 
+A_BOARD = uno
+
 
 # Processor frequency.
 #     This will define a symbol, F_CPU, in all source code files equal to the 
@@ -115,7 +117,7 @@ FORMAT = ihex
 
 
 # Target file name (without extension).
-TARGET = Arduino-usbserial
+TARGET = out/ardwiino-$(A_BOARD)-usb-$(MCU)-$(F_CPU)-usbserial
 
 
 # Object files directory
@@ -143,7 +145,7 @@ include $(LUFA_PATH)/LUFA/makefile
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(TARGET).c                                                 \
+SRC = Arduino-usbserial.c                                                 \
 	  Descriptors.c                                               \
 	  $(LUFA_SRC_USB)                                             \
 	  $(LUFA_SRC_USBCLASS)										  \
@@ -504,7 +506,7 @@ hex: $(TARGET).hex
 eep: $(TARGET).eep
 lss: $(TARGET).lss
 sym: $(TARGET).sym
-asm: $(TARGET).s
+asm: $(OBJDIR)/Arduino-usbserial.s
 LIBNAME=lib$(TARGET).a
 lib: $(LIBNAME)
 
@@ -697,6 +699,7 @@ extcoff: $(TARGET).elf
 $(OBJDIR)/%.o : %.c
 	@echo
 	@echo $(MSG_COMPILING) $<
+	mkdir -p $(subst $(notdir $(@)),,$(@))
 	$(CC) -c $(ALL_CFLAGS) $< -o $@ 
 
 
@@ -708,12 +711,12 @@ $(OBJDIR)/%.o : %.cpp
 
 
 # Compile: create assembler files from C source files.
-%.s : %.c
+$(OBJDIR)/%.s : %.c
 	$(CC) -S $(ALL_CFLAGS) $< -o $@
 
 
 # Compile: create assembler files from C++ source files.
-%.s : %.cpp
+$(OBJDIR)/%.s : %.cpp
 	$(CC) -S $(ALL_CPPFLAGS) $< -o $@
 
 
@@ -725,7 +728,7 @@ $(OBJDIR)/%.o : %.S
 
 
 # Create preprocessed source for use in sending a bug report.
-%.i : %.c
+$(OBJDIR)/%.i : %.c
 	$(CC) -E -mmcu=$(MCU) -I. $(CFLAGS) $< -o $@ 
 	
 
@@ -746,9 +749,9 @@ clean_list:
 	$(REMOVE) $(TARGET).lss
 	$(REMOVE) $(SRC:%.c=$(OBJDIR)/%.o)
 	$(REMOVE) $(SRC:%.c=$(OBJDIR)/%.lst)
-	$(REMOVE) $(SRC:.c=.s)
-	$(REMOVE) $(SRC:.c=.d)
-	$(REMOVE) $(SRC:.c=.i)
+	$(REMOVE) $(SRC:.c=$(OBJDIR)/%.s)
+	$(REMOVE) $(SRC:.c=$(OBJDIR)/%.d)
+	$(REMOVE) $(SRC:.c=$(OBJDIR)/%.i)
 	$(REMOVEDIR) .dep
 
 doxygen:
