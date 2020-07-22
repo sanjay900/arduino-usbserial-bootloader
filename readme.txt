@@ -1,3 +1,6 @@
+A modified version of the arduino usbserial bootloader. 
+This responds to a 1200bps touch and jumps to the 8/16u2 dfu bootloader.
+
 To setup the project and upload the Arduino usbserial application firmware to an ATMEGA8U2 using the Arduino USB DFU bootloader:
 1. unpack the source into LUFA's Projects directory
 2. set ARDUINO_MODEL_PID in the makefile as appropriate
